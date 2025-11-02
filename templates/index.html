@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIXSEVENHUZZ.TECH - Where Gestures Meet Absolute Chaos 🎭</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="sixsevenhuzz-body">
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="emoji-icon bounce">🎭</span>
+                <h1 class="gradient-text-hero">SIXSEVENHUZZ.TECH</h1>
+            </div>
+            <p class="tagline-epic">Where Gestures Meet Absolute Chaos 🎪</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Video Feed Section -->
+            <div class="video-section">
+                <div class="video-container">
+                    <img src="{{ url_for('video_feed') }}" alt="Live Video Feed" class="video-feed">
+                    <div class="video-overlay">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">LIVE</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <p>📹 Your webcam is being used for gesture detection</p>
+                </div>
+            </div>
+
+            <!-- Gesture Display Section -->
+            <div class="gesture-section">
+                <div class="current-gesture-card">
+                    <h2>Current Gesture</h2>
+                    <div class="gesture-display">
+                        <img id="gestureImage" src="/images/smile.jpg" alt="Gesture Image" class="gesture-image">
+                        <div class="gesture-name" id="gestureName">😊 Smiling</div>
+                        <div class="gesture-description" id="gestureDescription">Happy!</div>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="stats-card">
+                    <h3>Detection Stats</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Confidence</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 70%"></div>
+                        </div>
+                        <span class="stat-value">70%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">FPS</span>
+                        <span class="stat-value">30</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hands Detected</span>
+                        <span class="stat-value" id="handsDetected">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestures Guide -->
+        <div class="gestures-guide">
+            <h2>Available Gestures</h2>
+            <div class="gestures-grid">
+                <div class="gesture-card">
+                    <div class="gesture-icon">👍</div>
+                    <h3>Thumbs Up</h3>
+                    <p>Thumb up, all fingers down</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">✌️</div>
+                    <h3>Peace Sign</h3>
+                    <p>Index & middle fingers up</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">👋</div>
+                    <h3>Open Palm</h3>
+                    <p>All fingers spread wide</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">✊</div>
+                    <h3>Fist</h3>
+                    <p>All fingers curled</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">☝️</div>
+                    <h3>Pointing</h3>
+                    <p>Only index finger up</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">😮</div>
+                    <h3>Yawning</h3>
+                    <p>Mouth wide open</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-icon">🌊</div>
+                    <h3>Wave Motion</h3>
+                    <p>Both palms up & down</p>
+                </div>
+                <div class="gesture-card highlight">
+                    <div class="gesture-icon">🎉</div>
+                    <h3>Victory</h3>
+                    <p>Both hands raised high</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered</h3>
+                    <p>Uses MediaPipe for accurate hand tracking and gesture recognition</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-Time</h3>
+                    <p>Instant gesture detection with 30+ FPS performance</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>High Accuracy</h3>
+                    <p>70% confidence threshold with multi-criteria validation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Animated Reactions</h3>
+                    <p>Dynamic GIFs and animations for each gesture</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Created by <strong>Aditya Punjani</strong></p>
+            <p>Built with ❤️ using Flask, MediaPipe, OpenCV & Python</p>
+            <p class="tech-stack">
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">Flask</span>
+                <span class="tech-badge">MediaPipe</span>
+                <span class="tech-badge">OpenCV</span>
+                <span class="tech-badge">JavaScript</span>
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
