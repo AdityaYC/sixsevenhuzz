@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monkey Gesture Detector - Interactive Camera Fun</title>
+    <meta name="description" content="Real-time gesture detection with monkey reactions using MediaPipe and browser camera">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MediaPipe CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Loading Monkey Gesture Detector...</h2>
+            <p id="loadingStatus">Initializing MediaPipe...</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="mainContainer" class="main-container hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🐵 Monkey Gesture Detector</h1>
+                <p class="subtitle">Make gestures and watch the monkey react!</p>
+            </div>
+            <button id="helpBtn" class="help-btn" aria-label="Show help">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Video and Reaction Container -->
+            <div class="video-container">
+                <!-- Camera Feed -->
+                <div class="camera-wrapper">
+                    <video id="videoElement" class="video-feed" autoplay playsinline></video>
+                    <canvas id="canvasElement" class="canvas-overlay"></canvas>
+                    
+                    <!-- Status Overlay -->
+                    <div class="status-overlay">
+                        <div class="status-badge" id="statusBadge">
+                            <span class="status-icon">😊</span>
+                            <span class="status-text" id="statusText">Smiling - Happy!</span>
+                        </div>
+                        <div class="fps-counter" id="fpsCounter">FPS: 0</div>
+                    </div>
+                </div>
+
+                <!-- Monkey Reaction Display -->
+                <div class="reaction-wrapper">
+                    <div class="reaction-container">
+                        <img id="reactionImage" class="reaction-image" src="images/monkey_finger_mouth.jpeg" alt="Monkey reaction">
+                        <div class="reaction-label" id="reactionLabel">Default - Finger to Mouth</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label for="sensitivitySlider">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m8.66-11.66l-5.2 3M8.54 14.66l-5.2 3m13.32 0l-5.2-3M8.54 9.34l-5.2-3"></path>
+                        </svg>
+                        Sensitivity: <span id="sensitivityValue">0.7</span>
+                    </label>
+                    <input type="range" id="sensitivitySlider" min="0.5" max="0.9" step="0.05" value="0.7">
+                </div>
+
+                <div class="control-group">
+                    <button id="toggleCamera" class="control-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        Switch Camera
+                    </button>
+                    
+                    <button id="screenshotBtn" class="control-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        Screenshot
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Help Modal -->
+        <div id="helpModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🎯 How to Use</h2>
+                    <button id="closeModal" class="close-btn" aria-label="Close">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="gesture-grid">
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">🤫</div>
+                            <h3>Finger to Mouth</h3>
+                            <p>Place your index finger near your mouth</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">☝️</div>
+                            <h3>Raised Finger</h3>
+                            <p>Point your index finger up, keep others down</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">👅</div>
+                            <h3>Tongue Out</h3>
+                            <p>Open mouth wide and move side to side OR raise both hands</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">👍</div>
+                            <h3>Thumbs Up</h3>
+                            <p>Show thumbs up with other fingers closed</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">✌️</div>
+                            <h3>Peace Sign</h3>
+                            <p>Extend index and middle fingers in V shape</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">👋</div>
+                            <h3>Open Palm</h3>
+                            <p>Show open hand with all fingers spread</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">✊</div>
+                            <h3>Fist</h3>
+                            <p>Make a closed fist</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">😮</div>
+                            <h3>Yawn</h3>
+                            <p>Open your mouth very wide</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">🕺</div>
+                            <h3>Dancing</h3>
+                            <p>Raise both hands up to middle of screen</p>
+                        </div>
+                        <div class="gesture-card">
+                            <div class="gesture-emoji">🎉</div>
+                            <h3>Victory</h3>
+                            <p>Raise both hands very high OR wave both palms</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tips-section">
+                        <h3>💡 Tips</h3>
+                        <ul>
+                            <li>Ensure good lighting for better detection</li>
+                            <li>Keep your hands visible in the camera frame</li>
+                            <li>Make clear, distinct gestures</li>
+                            <li>Adjust sensitivity if gestures aren't detected</li>
+                            <li>Allow camera permissions when prompted</li>
+                        </ul>
+                    </div>
+
+                    <div class="browser-support">
+                        <h3>🌐 Browser Support</h3>
+                        <p>Works best on: Chrome, Edge, Safari (iOS 14.3+), Firefox</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Error -->
+        <div id="permissionError" class="error-message hidden">
+            <div class="error-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h2>Camera Access Required</h2>
+                <p>Please allow camera access to use this application.</p>
+                <button id="retryBtn" class="retry-btn">Retry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made with ❤️ by Aditya Punjani | <a href="https://github.com/AdityaYC/sixsevenhuzz" target="_blank">GitHub</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
