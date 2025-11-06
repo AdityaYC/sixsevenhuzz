@@ -259,7 +259,8 @@ function isFingerCurled(tip, pip, mcp, wrist) {
  * @returns {Object} Object containing finger states
  */
 function getFingerStates(handLandmarks) {
-    const landmarks = handLandmarks.landmarks;
+    // MediaPipe browser returns landmarks directly as array
+    const landmarks = handLandmarks;
     
     // Get all landmarks
     const thumbTip = landmarks[4];
@@ -329,8 +330,8 @@ function updateFPS() {
 function detectThumbsUp(handLandmarks) {
     for (const hand of handLandmarks) {
         const fingerStates = getFingerStates(hand);
-        const thumbTip = hand.landmarks[4];
-        const wrist = hand.landmarks[0];
+        const thumbTip = hand[4];
+        const wrist = hand[0];
         
         // Thumbs up: ONLY thumb extended, all other fingers curled
         const thumbUp = fingerStates.thumbExtended && thumbTip.y < wrist.y - 0.1;
@@ -354,8 +355,8 @@ function detectThumbsUp(handLandmarks) {
 function detectPeaceSign(handLandmarks) {
     for (const hand of handLandmarks) {
         const fingerStates = getFingerStates(hand);
-        const indexTip = hand.landmarks[8];
-        const middleTip = hand.landmarks[12];
+        const indexTip = hand[8];
+        const middleTip = hand[12];
         
         // Peace sign: ONLY index and middle extended, others curled, fingers spread apart
         const peaceFingers = fingerStates.indexExtended && fingerStates.middleExtended;
@@ -382,8 +383,8 @@ function detectOpenPalm(handLandmarks) {
     
     const hand = handLandmarks[0];
     const fingerStates = getFingerStates(hand);
-    const indexTip = hand.landmarks[8];
-    const pinkyTip = hand.landmarks[20];
+    const indexTip = hand[8];
+    const pinkyTip = hand[20];
     
     // Open palm: ALL fingers extended and spread
     const allExtended = fingerStates.indexExtended && 
@@ -430,13 +431,13 @@ function detectFingerToMouth(handLandmarks, faceLandmarks) {
     }
     
     const face = faceLandmarks[0];
-    const mouthTop = face.landmarks[13];
-    const mouthBottom = face.landmarks[14];
+    const mouthTop = face[13];
+    const mouthBottom = face[14];
     const mouthCenterX = (mouthTop.x + mouthBottom.x) / 2;
     const mouthCenterY = (mouthTop.y + mouthBottom.y) / 2;
     
     for (const hand of handLandmarks) {
-        const indexFingerTip = hand.landmarks[8];
+        const indexFingerTip = hand[8];
         const distance = Math.sqrt(
             Math.pow(indexFingerTip.x - mouthCenterX, 2) + 
             Math.pow(indexFingerTip.y - mouthCenterY, 2)
@@ -482,10 +483,10 @@ function detectYawn(faceLandmarks) {
     }
     
     const face = faceLandmarks[0];
-    const upperLip = face.landmarks[13];
-    const lowerLip = face.landmarks[14];
-    const mouthLeft = face.landmarks[61];
-    const mouthRight = face.landmarks[291];
+    const upperLip = face[13];
+    const lowerLip = face[14];
+    const mouthLeft = face[61];
+    const mouthRight = face[291];
     
     // Calculate mouth aspect ratio
     const mouthHeight = calculateDistance(upperLip, lowerLip);
@@ -507,10 +508,10 @@ function detectTongueOut(faceLandmarks) {
     }
     
     const face = faceLandmarks[0];
-    const upperLip = face.landmarks[13];
-    const lowerLip = face.landmarks[14];
-    const mouthLeft = face.landmarks[61];
-    const mouthRight = face.landmarks[291];
+    const upperLip = face[13];
+    const lowerLip = face[14];
+    const mouthLeft = face[61];
+    const mouthRight = face[291];
     
     // Calculate mouth opening (vertical distance)
     const mouthHeight = Math.abs(upperLip.y - lowerLip.y);
@@ -570,8 +571,8 @@ function detectWaveMotion(handLandmarks) {
     
     if (hand1Open && hand2Open) {
         // Track hand positions over time
-        const wrist1 = handLandmarks[0].landmarks[0];
-        const wrist2 = handLandmarks[1].landmarks[0];
+        const wrist1 = handLandmarks[0][0];
+        const wrist2 = handLandmarks[1][0];
         
         // Determine which is left and which is right based on x position
         const leftWrist = wrist1.x < wrist2.x ? wrist1 : wrist2;
@@ -628,10 +629,10 @@ function detectCoveringFace(handLandmarks, faceLandmarks) {
     }
     
     const face = faceLandmarks[0];
-    const nose = face.landmarks[1];
+    const nose = face[1];
     
     for (const hand of handLandmarks) {
-        const palmCenter = hand.landmarks[9]; // Middle finger MCP
+        const palmCenter = hand[9]; // Middle finger MCP
         const distanceToFace = Math.sqrt(
             Math.pow(palmCenter.x - nose.x, 2) + 
             Math.pow(palmCenter.y - nose.y, 2)
@@ -656,13 +657,13 @@ function detectKissing(handLandmarks, faceLandmarks) {
     }
     
     const face = faceLandmarks[0];
-    const mouthTop = face.landmarks[13];
-    const mouthBottom = face.landmarks[14];
+    const mouthTop = face[13];
+    const mouthBottom = face[14];
     const mouthCenterX = (mouthTop.x + mouthBottom.x) / 2;
     const mouthCenterY = (mouthTop.y + mouthBottom.y) / 2;
     
     for (const hand of handLandmarks) {
-        const indexTip = hand.landmarks[8];
+        const indexTip = hand[8];
         const distance = Math.sqrt(
             Math.pow(indexTip.x - mouthCenterX, 2) + 
             Math.pow(indexTip.y - mouthCenterY, 2)
@@ -687,7 +688,7 @@ function detectDancing(handLandmarks) {
     }
     
     // Get both hands' positions
-    const handYPositions = handLandmarks.map(hand => hand.landmarks[0].y);
+    const handYPositions = handLandmarks.map(hand => hand[0].y);
     
     // Check if both hands are raised (easier)
     const bothHandsUp = handYPositions.every(y => y < CONFIG.DANCING_HANDS_Y);
@@ -705,8 +706,8 @@ function detectClapping(handLandmarks) {
         return false;
     }
     
-    const hand1Center = handLandmarks[0].landmarks[9]; // Middle finger MCP
-    const hand2Center = handLandmarks[1].landmarks[9];
+    const hand1Center = handLandmarks[0][9]; // Middle finger MCP
+    const hand2Center = handLandmarks[1][9];
     const handsDistance = Math.abs(hand1Center.x - hand2Center.x);
     
     // Hands close together (clapping)
@@ -723,7 +724,7 @@ function detectVictory(handLandmarks) {
         return false;
     }
     
-    const handYPositions = handLandmarks.map(hand => hand.landmarks[8].y); // Index finger tips
+    const handYPositions = handLandmarks.map(hand => hand[8].y); // Index finger tips
     
     // Both hands very high (static victory pose)
     return handYPositions.every(y => y < CONFIG.VICTORY_HANDS_Y);
